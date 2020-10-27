@@ -25,13 +25,22 @@ class EMS:
             self.conn.commit()
 
 
-    def updatePay(self, emp_id, updated_pay):
+    def updateEmployee(self, emp_id, updates):
         ## update the pay of a particular employee
+        filtered_updates = {}
+        for i in updates:
+            if updates[i] != 'N':
+                filtered_updates[i] = updates[i]
         try:
-            self.c.execute("UPDATE emp_details SET pay = :pay WHERE EMP_ID = :emp_id", {'pay' : updated_pay, 'emp_id' : emp_id})
-            print("\nEmployee Salary Updated!!!\n")
+            self.c.execute("UPDATE emp_details SET firstname = :fname, lastname = :lname, job_desc = :job, pay=:pay, address=:addr"
+                           " WHERE EMP_ID = :emp_id", {'fname':filtered_updates[up_fname], 'lname' : filtered_updates[up_lname],
+                                                       'job' : filtered_updates[up_job],
+                                                       'pay' : filtered_updates[up_pay],
+                                                       'addr' : filtered_updates[up_add]})
+            print("\nEmployee Updated!!!\n")
         except Exception as e:
-            print(e)
+            ## print(e)
+            pass
         finally:
             self.conn.commit()
 
@@ -92,8 +101,18 @@ if __name__ == "__main__":
             ems.getEmployee(emp_id)
         elif choice == 4:
             emp_id = input("Enter Employee ID :- ")
-            updated_pay = input("Enter New Salary :- ")
-            ems.updatePay(emp_id,updated_pay)
+            print("\nEnter all data to be updates.\nFor a field to be updated, enter the  updated value.\nIf you dont want to update a particular field enter N\n")
+            up_fname = input("\nEnter updated first Name :- ")
+            up_lname = input("\nEnter updated last name :- ")
+            up_job = input("\nEnter updated Job Description :- ")
+            up_pay = input("\nEnter updated Pay :- ")
+            up_add = input("\nEnter updated address :- ")
+            updates = {'up_fname' : up_fname,
+                       'up_lname' : up_lname,
+                       'up_job' : up_job,
+                       'up_pay' : up_pay,
+                       'up_addr' : up_add}
+            ems.updateEmployee(emp_id,updates)
         elif choice == 5:
             emp_id = input("Enter Employee ID :- ")
             ems.removeEmployee(emp_id)
